@@ -1,4 +1,4 @@
-import { getRepository } from 'typeorm';
+import { getCustomRepository, getRepository } from 'typeorm';
 import AppError from '../errors/AppError';
 // import AppError from '../errors/AppError';
 
@@ -20,22 +20,25 @@ class CreateTransactionService {
     type,
     category,
   }: Request): Promise<Transaction> {
-    const transactionsRepository = getRepository(TransactionsRepository);
+    const transactionsRepository = getCustomRepository(TransactionsRepository);
 
     let categoryOnDB;
 
-    if (category) {
-      const categoriesRepository = getRepository(Category);
-      categoryOnDB = await categoriesRepository.findOne({
-        where: { title: category },
-      });
-      if (!categoryOnDB) {
-        categoryOnDB = categoriesRepository.create({ title: category });
+    const categoriesRepository = getRepository(Category);
+    categoryOnDB = await categoriesRepository.findOne({
+      where: { title: category },
+    });
 
-        await categoriesRepository.save(categoryOnDB);
-      }
-    } else {
-      throw new AppError('Category field is required', 400);
+    if (!categoryOnDB) {
+      categoryOnDB = categoriesRepository.create({ title: category });
+
+      await categoriesRepository.save(categoryOnDB);
+    }
+
+    const { total } = await transactionsRepository.getBalance();
+
+    if (type === 'outcome' && total < value) {
+      throw new AppError('Insuficient balance', 400);
     }
 
     const transaction = transactionsRepository.create({
@@ -43,6 +46,7 @@ class CreateTransactionService {
       value,
       type,
       category_id: categoryOnDB.id,
+      category: categoryOnDB,
     });
 
     await transactionsRepository.save(transaction);

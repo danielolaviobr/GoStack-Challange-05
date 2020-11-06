@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import Transaction from './Transaction';
 
 @Entity('categories')
 class Category {
@@ -13,6 +14,9 @@ class Category {
 
   @Column()
   updated_at: Date;
+
+  @OneToMany(() => Transaction, transaction => transaction.category_id)
+  public Transactions: Transaction[];
 }
 
 export default Category;

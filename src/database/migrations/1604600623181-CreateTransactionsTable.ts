@@ -21,7 +21,7 @@ export default class CreateTransactionsTable1604600623181
           },
           {
             name: 'value',
-            type: 'numeric',
+            type: 'double precision',
           },
           {
             name: 'type',
@@ -29,7 +29,7 @@ export default class CreateTransactionsTable1604600623181
           },
           {
             name: 'category_id',
-            type: 'varchar',
+            type: 'uuid',
           },
           {
             name: 'created_at',

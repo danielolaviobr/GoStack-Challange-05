@@ -14,18 +14,20 @@ class TransactionsRepository extends Repository<Transaction> {
     const incomeTransactions = await this.find({ where: { type: 'income' } });
     const outcomeTransactions = await this.find({ where: { type: 'outcome' } });
 
-    const incomeTransactionsValue = incomeTransactions.map(
-      transaction => transaction.value,
+    const incomeTransactionsValue = incomeTransactions.map(transaction =>
+      Number(transaction.value),
     );
-    const outcomeTransactionsValue = outcomeTransactions.map(
-      transaction => transaction.value,
+    const outcomeTransactionsValue = outcomeTransactions.map(transaction =>
+      Number(transaction.value),
     );
 
-    const income = incomeTransactionsValue.reduce(
+    const income: number = incomeTransactionsValue.reduce(
       (sum, incomeValue) => sum + incomeValue,
+      0,
     );
-    const outcome = outcomeTransactionsValue.reduce(
-      (sum, outcomeValue) => sum + outcomeValue,
+    const outcome: number = outcomeTransactionsValue.reduce(
+      (sum: number, outcomeValue: number) => sum + outcomeValue,
+      0,
     );
 
     const balance: Balance = {
